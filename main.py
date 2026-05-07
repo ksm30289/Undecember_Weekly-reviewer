@@ -47,26 +47,41 @@ def main():
 
     review_texts = []
 
-    for row in review_records:
-        date = str(
-            row.get("작성일", "")
-        ).strip()
+for row in review_records:
+    date = str(
+        row.get("작성일", "")
+    ).strip()
 
-        review = str(
-            row.get("번역문", "")
-        ).strip()
+    review = str(
+        row.get("번역문", "")
+    ).strip()
 
-        score = str(
-            row.get("평점", "")
-        ).strip()
+    score = str(
+        row.get("평점", "")
+    ).strip()
 
-        if (
-            start_date <= date <= end_date
-            and review
-        ):
-            review_texts.append(
-                f"[{score}점] {review}"
+    if (
+        start_date <= date <= end_date
+        and review
+    ):
+        # ✅ 줄바꿈 제거
+        clean_review = (
+            review
+            .replace("\n", " ")
+            .replace("\r", " ")
+            .strip()
+        )
+
+        # ✅ 너무 긴 리뷰 제한
+        if len(clean_review) > 200:
+            clean_review = (
+                clean_review[:200] + "..."
             )
+
+        # ✅ 리스트 형태 개선
+        review_texts.append(
+            f"- [{score}점] {clean_review}"
+        )
 
     report_text = summarize_weekly(
         start_date=start_date,
