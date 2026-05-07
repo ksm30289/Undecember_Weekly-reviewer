@@ -22,14 +22,9 @@ from weekly_summary import (
 def main():
     print("주간 리포트 생성 시작")
 
-    start_date, end_date = (
-        get_last_week_range()
-    )
+    start_date, end_date = get_last_week_range()
 
-    print(
-        f"대상 기간: "
-        f"{start_date} ~ {end_date}"
-    )
+    print(f"대상 기간: {start_date} ~ {end_date}")
 
     daily_records = get_records(
         DAILY_REPORT_SHEET
@@ -47,47 +42,45 @@ def main():
 
     review_texts = []
 
-for row in review_records:
-    date = str(
-        row.get("작성일", "")
-    ).strip()
+    for row in review_records:
+        date = str(
+            row.get("작성일", "")
+        ).strip()
 
-    review = str(
-        row.get("번역문", "")
-    ).strip()
+        review = str(
+            row.get("번역문", "")
+        ).strip()
 
-    score = str(
-        row.get("평점", "")
-    ).strip()
+        score = str(
+            row.get("평점", "")
+        ).strip()
 
-    if (
-        start_date <= date <= end_date
-        and review
-    ):
-        # ✅ 줄바꿈 제거
-        clean_review = (
-            review
-            .replace("\n", " ")
-            .replace("\r", " ")
-            .strip()
-        )
-
-        # ✅ 너무 긴 리뷰 제한
-        if len(clean_review) > 200:
+        if (
+            start_date <= date <= end_date
+            and review
+        ):
             clean_review = (
-                clean_review[:200] + "..."
+                review
+                .replace("\n", " ")
+                .replace("\r", " ")
+                .strip()
             )
 
-        # ✅ 리스트 형태 개선
-        review_texts.append(
-            f"- [{score}점] {clean_review}"
-        )
+            if len(clean_review) > 200:
+                clean_review = clean_review[:200] + "..."
+
+            review_texts.append(
+                f"- [{score}점] {clean_review}"
+            )
+
+    print(f"일별 리포트 수: {len(weekly_reports)}")
+    print(f"구글 리뷰 수: {len(review_texts)}")
 
     report_text = summarize_weekly(
         start_date=start_date,
         end_date=end_date,
         daily_reports=weekly_reports,
-        review_reports=review_texts[:200],
+        review_reports="\n".join(review_texts[:200]),
     )
 
     created_at = datetime.now(
