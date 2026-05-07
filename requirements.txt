@@ -1,0 +1,3 @@
+gspread
+google-auth
+openai>=1.30.0
